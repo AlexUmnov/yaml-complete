@@ -7,7 +7,8 @@ dependencies:
   - gh
   - pip
   - ipykernel
+  - pandas
   - openai
+  - tqdm
   - pip:
     - github3.py
-    - tqdm
