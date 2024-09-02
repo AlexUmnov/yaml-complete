@@ -4,7 +4,7 @@ import random
 
 import fire
 
-def main(test_folder: Path, evaluations_per_file: int = 3, output_file_path: Path = Path("evaluation_data.json")):
+def main(test_folder: Path, evaluations_per_file: int = 1, output_file_path: Path = Path("evaluation_data.json")):
     if isinstance(test_folder, str):
         test_folder = Path(test_folder)
     evaluations = []

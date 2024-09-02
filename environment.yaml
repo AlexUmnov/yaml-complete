@@ -10,5 +10,7 @@ dependencies:
   - pandas
   - openai
   - tqdm
+  - pyyaml
+  - transformers
   - pip:
     - github3.py
