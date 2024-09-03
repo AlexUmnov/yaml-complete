@@ -11,6 +11,11 @@ dependencies:
   - openai
   - tqdm
   - pyyaml
+  - pytorch
   - transformers
+  - accelerate
+  - bitsandbytes
   - pip:
     - github3.py
+    - vllm
+    - https://github.com/casper-hansen/AutoAWQ/releases/download/v0.2.6/autoawq-0.2.6-cp39-cp39-linux_x86_64.whl
