@@ -12,10 +12,10 @@ class HuggingFacePredictor(AutocompletePredictor):
     def __init__(
         self,
         model_name: str,
-        tokenizer_name: Optional[str],
-        init_params: Dict[str, Any],
-        inference_params: Dict[str, Any],
         inferencing_prompt: str,
+        tokenizer_name: Optional[str] = None,
+        init_params: Dict[str, Any] = {},
+        inference_params: Dict[str, Any] = {},
     ):
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
@@ -26,6 +26,7 @@ class HuggingFacePredictor(AutocompletePredictor):
 
         self.inference_params = inference_params
         self.inferencing_prompt = inferencing_prompt
+        self.total_cost = 0
         
 
     def predict(self, text_before: str, text_after: str) -> str:
@@ -50,25 +51,27 @@ stable_code_hf = partial(HuggingFacePredictor,
         "max_new_tokens": 128,
         "stop_strings": ["\n"]
     },
-#     inferencing_prompt="""
-# #Predict completion for the following YAML file
-# #in the following format
-
-# #The text after current line:
-# text
-# #The text before current line:
-# text
-# <completion goes here> 
-
-# #The text after current line:
-# {text_after}
-
-# #The text before current line:
-# {text_before}
-# """
     inferencing_prompt="""```yaml
-    {text_before}
-"""
+    # Text before
+    {text_after}
+    # Complete Yaml:
+    {text_before}"""
+)
+
+deepseek_coder_v2_lite_base = partial(HuggingFacePredictor, 
+    model_name="deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n"]
+    },
+    inferencing_prompt="""```yaml
+    # Text before
+    {text_after}
+    # Complete Yaml:
+    {text_before}"""
 )
 
 class VLLMPredictor(AutocompletePredictor):
@@ -87,6 +90,7 @@ class VLLMPredictor(AutocompletePredictor):
         )
         self.inference_params = SamplingParams(**inference_params)
         self.inferencing_prompt = inferencing_prompt
+        self.total_cost = 0
     
     def predict(self, text_before: str, text_after: str) -> str:
         prompt = self.inferencing_prompt.format(
@@ -94,7 +98,7 @@ class VLLMPredictor(AutocompletePredictor):
             text_before=text_before
         )
 
-        outputs = self.model.generate([prompt], **self.inference_params)
+        outputs = self.model.generate([prompt], self.inference_params)
 
         return outputs[0].outputs[0].text.split("\n")[0]
 
@@ -109,6 +113,24 @@ stable_code_vllm = partial(VLLMPredictor,
         "max_tokens": 128,
     },
     inferencing_prompt="""```yaml
-    {text_before}
-"""
+    # Text before
+    {text_after}
+    # Complete Yaml:
+    {text_before}"""
+)
+
+codellama_vllm = partial(VLLMPredictor, 
+    model_name="codellama/CodeLlama-7b-hf",
+    init_params={
+        "max_model_len": 1024
+    },
+    inference_params={
+        "n": 1,
+        "max_tokens": 128,
+    },
+    inferencing_prompt="""```yaml
+    # Text before
+    {text_after}
+    # Complete Yaml:
+    {text_before}"""
 )

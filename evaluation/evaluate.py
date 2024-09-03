@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 import time
-from typing import Optional
+from typing import Optional, List
 
 import fire
 import pandas
@@ -47,7 +47,8 @@ def completion_iou(expected_values, predictions):
                 results.append(0)
     return sum(results) / len(results)
 
-def evaluate_predictor(test_cases, predictor, predictor_name):
+def evaluate_predictor(test_cases, predictor_class, predictor_name):
+    predictor = predictor_class()
     start = time.time()
     predictions = [
         predictor.predict(text_before=case['code_before'], text_after=case['code_after'])
@@ -57,14 +58,21 @@ def evaluate_predictor(test_cases, predictor, predictor_name):
     correct = [
         case['expected_code']  for case in test_cases
     ]
-    return {
+    result = {
         "exact_match": completion_exact_match(correct, predictions),
         "iou": completion_iou(correct, predictions),
         "average_latency (s)": elapsed / len(test_cases),
         "average_cost ($)": predictor.total_cost / len(test_cases)
     }
+    del predictor
+    return result
 
-def evaluate_all_predictors(test_file: Path, output_file: Path, limit_cases: Optional[int] = None):
+def evaluate_all_predictors(
+    test_file: Path, 
+    output_file: Path, 
+    limit_cases: Optional[int] = None,
+    include_predictors: Optional[List[str]] = None
+):
     if isinstance(test_file, str):
         test_file = Path(test_file)
     if isinstance(output_file, str):
@@ -77,6 +85,8 @@ def evaluate_all_predictors(test_file: Path, output_file: Path, limit_cases: Opt
 
     results = []
     for predictor_key, predictor_object in tqdm(predictor_registry.items()):
+        if include_predictors and predictor_key in include_predictors:
+            continue
         result = {
             "name": predictor_key
         }
