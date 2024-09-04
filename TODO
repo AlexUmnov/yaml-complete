@@ -1,4 +1,14 @@
 1. Evalution code [DONE]
 2. Data cleanup [DONE]
 3. Opensource model(s) [DONE]
-4. Finetune something
+4. Finetune something [DONE]
+
+
+Potential improvements:
+
+- Play with the prompt for chat models
+- Try other infilling models 
+- Try encoder-decoder architectures
+- For opensource models try to generate only tokens, which result in valid YAML
+- Get more data, better quality (i.e. don't autocomplete user, tokens, etc...)
+- Quantize the model with cpu-friendly benchmark for smoother cpu experience

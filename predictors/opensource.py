@@ -16,13 +16,19 @@ class HuggingFacePredictor(AutocompletePredictor):
         tokenizer_name: Optional[str] = None,
         init_params: Dict[str, Any] = {},
         inference_params: Dict[str, Any] = {},
+        device: Optional[str] = None
     ):
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name if tokenizer_name else model_name)
+
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
             **init_params 
         )
+        self.model.generation_config.pad_token_id = self.tokenizer.pad_token_id if self.tokenizer.pad_token_id else self.tokenizer.eos_token_id
 
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name if tokenizer_name else model_name)
+        self.device = device
+        if device:
+            self.model.to(device)
 
         self.inference_params = inference_params
         self.inferencing_prompt = inferencing_prompt
@@ -36,12 +42,18 @@ class HuggingFacePredictor(AutocompletePredictor):
         )
         input_ids = self.tokenizer(prompt, return_tensors='pt').to(self.model.device)["input_ids"]
 
-        outputs = self.model.generate(input_ids, tokenizer=self.tokenizer, **self.inference_params)
+        outputs = self.model.generate(
+            input_ids, 
+            tokenizer=self.tokenizer, 
+            **self.inference_params
+        )
 
         result = self.tokenizer.decode(outputs[0])
 
         if prompt in result:
             result = result.split(prompt)[1]
+        result = result.strip(self.tokenizer.eos_token)
+        result = result.strip(self.tokenizer.pad_token)
         return result
         
 
@@ -128,6 +140,64 @@ codegen_350_mono_hf = partial(HuggingFacePredictor,
 """
 )
 
+yaml_complete_fintetuned = partial(HuggingFacePredictor, 
+    model_name="alexvumnov/yaml_completion",
+    tokenizer_name="alexvumnov/yaml_completion",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n", "<|endoftext|>"]
+    },
+    inferencing_prompt= """
+# Here's a yaml file to offer a completion for
+# Lines after the current one
+{text_after}
+# Lines before the current one
+{text_before}
+# Completion:
+"""
+)
+
+yaml_complete_fintetuned_8_bit = partial(HuggingFacePredictor, 
+    model_name="alexvumnov/yaml_completion_8bit",
+    tokenizer_name="alexvumnov/yaml_completion_8bit",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n", "<|endoftext|>"]
+    },
+    inferencing_prompt= """
+# Here's a yaml file to offer a completion for
+# Lines after the current one
+{text_after}
+# Lines before the current one
+{text_before}
+# Completion:
+"""
+)
+
+yaml_complete_fintetuned_cpu = partial(HuggingFacePredictor, 
+    model_name="alexvumnov/yaml_completion",
+    tokenizer_name="alexvumnov/yaml_completion",
+    init_params={},
+    device='cpu',
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n", "<|endoftext|>"]
+    },
+    inferencing_prompt= """
+# Here's a yaml file to offer a completion for
+# Lines after the current one
+{text_after}
+# Lines before the current one
+{text_before}
+# Completion:
+"""
+)
 
 codegen2_16_b_p = partial(HuggingFacePredictor, 
     model_name="Salesforce/codegen2-16B_P",

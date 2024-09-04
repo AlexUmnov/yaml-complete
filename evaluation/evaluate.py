@@ -88,6 +88,8 @@ def evaluate_all_predictors(
         test_file = Path(test_file)
     if isinstance(output_file, str):
         output_file = Path(output_file)
+    if isinstance(include_predictors, str):
+        include_predictors = [include_predictors]
     
     test_cases = json.load(open(test_file))
     if limit_cases:
@@ -97,6 +99,7 @@ def evaluate_all_predictors(
     results = []
     for predictor_key, predictor_object in tqdm(predictor_registry.items()):
         if include_predictors and predictor_key not in include_predictors:
+            print(f"skipping {predictor_key}")
             continue
         result = {
             "name": predictor_key

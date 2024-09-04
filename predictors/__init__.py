@@ -8,7 +8,10 @@ from predictors.opensource import (
     codegen_350_mono_hf,
     codegen2_16_b_p,
     codegen_350_mono_hf,
-    codellama_hf 
+    codellama_hf,
+    yaml_complete_fintetuned,
+    yaml_complete_fintetuned_8_bit,
+    yaml_complete_fintetuned_cpu
 )
 
 predictor_registry = {
@@ -21,4 +24,7 @@ predictor_registry = {
     "codegen_350_mono_hf": codegen_350_mono_hf,
     "codegen2_16_b_p": codegen2_16_b_p,
     "code_llama": codellama_hf,
+    "yaml_complete_finetuned": yaml_complete_fintetuned,
+    "yaml_complete_finetuned_8_bit": yaml_complete_fintetuned_8_bit,
+    "yaml_complete_finetuned_cpu": yaml_complete_fintetuned_cpu
 }
