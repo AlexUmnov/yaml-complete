@@ -51,6 +51,8 @@ Otherwise you can limit models to evaluate with `--include-predictors pred1,pred
 
 To run the local damo in Tkinter gui you can run `python gui.py -p pred_name`
 
+Completions are generated after pressing <TAB>
+
 This project also includes a finetuned model, which you can find here 
 - https://huggingface.co/alexvumnov/yaml_completion
 - https://huggingface.co/alexvumnov/yaml_completion_8_bit
