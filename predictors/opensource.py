@@ -77,6 +77,21 @@ deepseek_coder_v2_lite_base = partial(HuggingFacePredictor,
     {text_before}"""
 )
 
+codellama_hf = partial(HuggingFacePredictor, 
+    model_name="codellama/CodeLlama-7b-hf",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n"]
+    },
+    inferencing_prompt="""```yaml
+    # Text before
+    {text_after}
+    # Complete Yaml:
+    {text_before}"""
+)
 
 codegen_350_hf = partial(HuggingFacePredictor, 
     model_name="Salesforce/codegen-350M-multi",
@@ -125,22 +140,6 @@ class VLLMPredictor(AutocompletePredictor):
         
 stable_code_vllm = partial(VLLMPredictor, 
     model_name="stabilityai/stable-code-3b",
-    init_params={
-        "max_model_len": 1024
-    },
-    inference_params={
-        "n": 1,
-        "max_tokens": 128,
-    },
-    inferencing_prompt="""```yaml
-    # Text before
-    {text_after}
-    # Complete Yaml:
-    {text_before}"""
-)
-
-codellama_vllm = partial(VLLMPredictor, 
-    model_name="codellama/CodeLlama-7b-hf",
     init_params={
         "max_model_len": 1024
     },
