@@ -12,3 +12,4 @@ Potential improvements:
 - For opensource models try to generate only tokens, which result in valid YAML
 - Get more data, better quality (i.e. don't autocomplete user, tokens, etc...)
 - Quantize the model with cpu-friendly benchmark for smoother cpu experience
+- Finetune a larger model, test it, distil it into a smaller one
