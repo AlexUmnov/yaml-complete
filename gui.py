@@ -32,7 +32,7 @@ def autocomplete(text, cursor_pos, predictor):
 
 def main(predictor_name='openai_chat_predictor'):
     if predictor_name != "dumb":
-        predictor = predictor_registry[predictor_name]
+        predictor = predictor_registry[predictor_name]()
     else:
         predictor = None
 
