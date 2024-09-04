@@ -61,7 +61,7 @@ stable_code_hf = partial(HuggingFacePredictor,
     {text_before}"""
 )
 
-deepseek_coder_v2_lite_base = partial(HuggingFacePredictor, 
+deepseek_coder_v2_lite_base_hf = partial(HuggingFacePredictor, 
     model_name="deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
     init_params={
         "device_map": "auto"
@@ -106,6 +106,38 @@ codegen_350_hf = partial(HuggingFacePredictor,
     inferencing_prompt="""
 #file.yaml
 {text_before}
+"""
+)
+
+codegen_350_mono_hf = partial(HuggingFacePredictor, 
+    model_name="Salesforce/codegen-350M-mono",
+    tokenizer_name="Salesforce/codegen-350M-mono",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n"]
+    },
+    inferencing_prompt="""
+#file.yaml
+{text_before}
+"""
+)
+
+
+codegen2_16_b_p = partial(HuggingFacePredictor, 
+    model_name="Salesforce/codegen2-16B_P",
+    tokenizer_name="Salesforce/codegen2-16B_P",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n"]
+    },
+    inferencing_prompt="""
+{text_bofore} + "<mask_1>" + {text_after} + "<|endoftext|>" + "<sep>" + "<mask_1>"
 """
 )
 

@@ -8,6 +8,7 @@ import pandas
 from tqdm.auto import tqdm
 
 from predictors import predictor_registry
+from data_gather.filtering.simple import ValidYamlFilter
 
 
 def longest_common_substring(str1, str2):
@@ -54,6 +55,14 @@ def evaluate_predictor(test_cases, predictor_class, predictor_name):
         predictor.predict(text_before=case['code_before'], text_after=case['code_after'])
         for case in tqdm(test_cases, desc=predictor_name)
     ]
+    resulting_texts = [
+        case['code_before'] + prediction + '\n' + case['code_after']
+        for prediction, case in zip(predictions, test_cases)
+    ]
+    legit_yamls = [
+        ValidYamlFilter()(text)
+        for text in resulting_texts
+    ]
     elapsed = time.time() - start
     correct = [
         case['expected_code']  for case in test_cases
@@ -61,6 +70,7 @@ def evaluate_predictor(test_cases, predictor_class, predictor_name):
     result = {
         "exact_match": completion_exact_match(correct, predictions),
         "iou": completion_iou(correct, predictions),
+        "legit_yaml": sum(legit_yamls) / len(resulting_texts),
         "average_latency (s)": elapsed / len(test_cases),
         "average_cost ($)": predictor.total_cost / len(test_cases)
     }
@@ -85,7 +95,7 @@ def evaluate_all_predictors(
 
     results = []
     for predictor_key, predictor_object in tqdm(predictor_registry.items()):
-        if include_predictors and predictor_key in include_predictors:
+        if include_predictors and predictor_key not in include_predictors:
             continue
         result = {
             "name": predictor_key
