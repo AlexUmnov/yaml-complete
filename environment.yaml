@@ -4,17 +4,18 @@ channels:
   - defaults
 dependencies:
   - python=3.9
-  - gh
-  - pip
-  - ipykernel
-  - pandas
-  - openai
-  - tqdm
-  - pyyaml
-  - pytorch
-  - transformers
   - accelerate
   - bitsandbytes
+  - fire
+  - gh
+  - ipykernel
+  - openai
+  - pandas
+  - pip
+  - pytorch
+  - pyyaml
+  - tqdm
+  - transformers
   - pip:
     - github3.py
     - vllm

@@ -37,8 +37,11 @@ class HuggingFacePredictor(AutocompletePredictor):
 
         outputs = self.model.generate(input_ids, tokenizer=self.tokenizer, **self.inference_params)
 
-        return self.tokenizer.decode(outputs[0])
+        result = self.tokenizer.decode(outputs[0])
 
+        if prompt in result:
+            result = result.split(prompt)[1]
+        return result
 
 stable_code_hf = partial(HuggingFacePredictor, 
     model_name="stabilityai/stable-code-3b",
@@ -50,24 +53,25 @@ stable_code_hf = partial(HuggingFacePredictor,
         "max_new_tokens": 128,
         "stop_strings": ["\n"]
     },
-#     inferencing_prompt="""
-# #Predict completion for the following YAML file
-# #in the following format
-
-# #The text after current line:
-# text
-# #The text before current line:
-# text
-# <completion goes here> 
-
-# #The text after current line:
-# {text_after}
-
-# #The text before current line:
-# {text_before}
-# """
     inferencing_prompt="""```yaml
     {text_before}
+"""
+)
+
+
+codegen_350_hf = partial(HuggingFacePredictor, 
+    model_name="Salesforce/codegen-350M-multi",
+    tokenizer_name="Salesforce/codegen-350M-multi",
+    init_params={
+        "device_map": "auto"
+    },
+    inference_params={
+        "max_new_tokens": 128,
+        "stop_strings": ["\n"]
+    },
+    inferencing_prompt="""
+#file.yaml
+{text_before}
 """
 )
 
