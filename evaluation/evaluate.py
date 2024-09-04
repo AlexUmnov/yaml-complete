@@ -59,8 +59,9 @@ def evaluate_predictor(test_cases, predictor_class, predictor_name):
         case['code_before'] + prediction + '\n' + case['code_after']
         for prediction, case in zip(predictions, test_cases)
     ]
+    valid_filter = ValidYamlFilter() 
     legit_yamls = [
-        ValidYamlFilter()(text)
+        valid_filter(text)
         for text in resulting_texts
     ]
     elapsed = time.time() - start
@@ -102,8 +103,7 @@ def evaluate_all_predictors(
         }
         result.update(evaluate_predictor(test_cases, predictor_object, predictor_key))
         results.append(result)
-
-    pandas.DataFrame(results).to_csv(output_file)
+        pandas.DataFrame(results).to_csv(output_file)
     
 if __name__ == "__main__":
     fire.Fire(evaluate_all_predictors)

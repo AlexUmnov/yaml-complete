@@ -43,6 +43,7 @@ class HuggingFacePredictor(AutocompletePredictor):
         if prompt in result:
             result = result.split(prompt)[1]
         return result
+        
 
 stable_code_hf = partial(HuggingFacePredictor, 
     model_name="stabilityai/stable-code-3b",
@@ -64,7 +65,9 @@ stable_code_hf = partial(HuggingFacePredictor,
 deepseek_coder_v2_lite_base_hf = partial(HuggingFacePredictor, 
     model_name="deepseek-ai/DeepSeek-Coder-V2-Lite-Base",
     init_params={
-        "device_map": "auto"
+        "device_map": "auto",
+        "trust_remote_code": True,
+        "torch_dtype": torch.float16,
     },
     inference_params={
         "max_new_tokens": 128,
@@ -130,7 +133,8 @@ codegen2_16_b_p = partial(HuggingFacePredictor,
     model_name="Salesforce/codegen2-16B_P",
     tokenizer_name="Salesforce/codegen2-16B_P",
     init_params={
-        "device_map": "auto"
+        "device_map": "auto",
+        "torch_dtype": torch.float16,
     },
     inference_params={
         "max_new_tokens": 128,
